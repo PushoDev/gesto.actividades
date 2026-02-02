@@ -10,3 +10,9 @@ export type SharedData = {
     sidebarOpen: boolean;
     [key: string]: unknown;
 };
+
+export type PageProps = {
+    [K in keyof SharedData]: SharedData[K];
+} & {
+    [key: string]: unknown;
+};
