@@ -14,19 +14,20 @@ return new class extends Migration
         Schema::create('actividades', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // El dueño del registro
-            
+            $table->enum('tipo_actividad', ['modelo_general', 'comunidad_transformacion'])->default('modelo_general');
+
             $table->string('institucion');
             $table->string('nombre_actividad');
             $table->date('dia');
             $table->time('hora');
             $table->string('lugar')->nullable();
             $table->string('manifestacion');
-            
+
             // Aquí vive la estructura compleja que definiste
-            $table->json('talento')->nullable(); 
+            $table->json('talento')->nullable();
             $table->json('grupos_etarios')->nullable();
             $table->json('proyectos_socioculturales')->nullable();
-            
+
             $table->string('programa_tributa')->nullable();
             $table->text('descripcion')->nullable();
             $table->timestamps();
