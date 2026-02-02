@@ -18,10 +18,15 @@ import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: 'General',
         href: dashboard(),
         icon: LayoutGrid,
     },
+    {
+        title: 'Actividades',
+        href: '/actividades',
+        icon: Folder,
+    }
 ];
 
 const footerNavItems: NavItem[] = [

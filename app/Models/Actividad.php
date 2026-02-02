@@ -11,6 +11,8 @@ class Actividad extends Model
 {
     use HasFactory;
 
+    protected $table = 'actividades';
+
     protected $fillable = [
         'user_id',
         'tipo_actividad',
