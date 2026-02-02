@@ -23,6 +23,7 @@ class Actividad extends Model
         'lugar',
         'manifestacion',
         'talento',
+        'talento_detallado',
         'grupos_etarios',
         'proyectos_socioculturales',
         'programa_tributa',
@@ -35,6 +36,7 @@ class Actividad extends Model
             'dia' => 'date',
             'hora' => 'datetime',
             'talento' => 'array',
+            'talento_detallado' => 'array',
             'grupos_etarios' => 'array',
             'proyectos_socioculturales' => 'array',
             'created_at' => 'datetime',
@@ -64,5 +66,30 @@ class Actividad extends Model
     public function getEsProximaAttribute(): bool
     {
         return $this->dia >= now()->startOfDay();
+    }
+
+    public function getProfesionalesAttribute(): array
+    {
+        return $this->talento_detallado['profesionales'] ?? [];
+    }
+
+    public function getAficionadosAttribute(): array
+    {
+        return $this->talento_detallado['aficionados'] ?? [];
+    }
+
+    public function getTotalArtistasAttribute(): int
+    {
+        return count($this->profesionales) + count($this->aficionados);
+    }
+
+    public function tieneProfesionales(): bool
+    {
+        return !empty($this->profesionales);
+    }
+
+    public function tieneAficionados(): bool
+    {
+        return !empty($this->aficionados);
     }
 }

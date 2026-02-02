@@ -1,5 +1,15 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Building, Calendar, MapPin, Users } from 'lucide-react';
+import {
+    ArrowLeft,
+    Building,
+    Calendar,
+    MapPin,
+    Users,
+    Plus,
+    Trash2,
+    User,
+    UserPlus,
+} from 'lucide-react';
 import type { BreadcrumbItem, PageProps } from '@/types';
 import AppLayout from '@/layouts/app-layout';
 import { store } from '@/routes/actividades';
@@ -62,6 +72,20 @@ export default function CrearActividad({
         lugar: '',
         manifestacion: '',
         talento: [] as string[],
+        talento_detallado: {
+            profesionales: [] as Array<{
+                tipo: string;
+                nombre: string;
+                apellidos: string;
+                ocupacion: string;
+            }>,
+            aficionados: [] as Array<{
+                categoria: string;
+                nombre: string;
+                apellidos: string;
+                ocupacion: string;
+            }>,
+        },
         grupos_etarios: [] as string[],
         proyectos_socioculturales: [] as string[],
         programa_tributa: '',
@@ -88,6 +112,51 @@ export default function CrearActividad({
                 data[field].filter((item) => item !== value),
             );
         }
+    };
+
+    const addProfesional = () => {
+        setData('talento_detallado.profesionales', [
+            ...data.talento_detallado.profesionales,
+            { tipo: 'Subvencionado', nombre: '', apellidos: '', ocupacion: '' },
+        ]);
+    };
+
+    const removeProfesional = (index: number) => {
+        setData(
+            'talento_detallado.profesionales',
+            data.talento_detallado.profesionales.filter((_, i) => i !== index),
+        );
+    };
+
+    const updateProfesional = (index: number, field: string, value: string) => {
+        const profesionales = [...data.talento_detallado.profesionales];
+        profesionales[index] = { ...profesionales[index], [field]: value };
+        setData('talento_detallado.profesionales', profesionales);
+    };
+
+    const addAficionado = () => {
+        setData('talento_detallado.aficionados', [
+            ...data.talento_detallado.aficionados,
+            {
+                categoria: 'Generales',
+                nombre: '',
+                apellidos: '',
+                ocupacion: '',
+            },
+        ]);
+    };
+
+    const removeAficionado = (index: number) => {
+        setData(
+            'talento_detallado.aficionados',
+            data.talento_detallado.aficionados.filter((_, i) => i !== index),
+        );
+    };
+
+    const updateAficionado = (index: number, field: string, value: string) => {
+        const aficionados = [...data.talento_detallado.aficionados];
+        aficionados[index] = { ...aficionados[index], [field]: value };
+        setData('talento_detallado.aficionados', aficionados);
     };
 
     return (
@@ -283,45 +352,398 @@ export default function CrearActividad({
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            {/* Talento */}
-                            <div className="space-y-3">
+                            {/* Talento Detallado */}
+                            <div className="space-y-6">
                                 <Label>
                                     <Users className="mr-2 inline h-4 w-4" />
-                                    Talento Participante
+                                    Talento Artístico
                                 </Label>
-                                <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-                                    {Object.entries(talentos).map(
-                                        ([key, label]) => (
-                                            <div
-                                                key={key}
-                                                className="flex items-center space-x-2"
+
+                                {/* Profesionales */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <Label className="text-base font-semibold">
+                                            Profesionales
+                                        </Label>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={addProfesional}
+                                        >
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            Agregar Profesional
+                                        </Button>
+                                    </div>
+
+                                    {data.talento_detallado.profesionales.map(
+                                        (profesional, index) => (
+                                            <Card
+                                                key={`profesional-${index}`}
+                                                className="p-4"
                                             >
-                                                <Checkbox
-                                                    id={`talento-${key}`}
-                                                    checked={data.talento.includes(
-                                                        key,
-                                                    )}
-                                                    onCheckedChange={(
-                                                        checked: boolean,
-                                                    ) =>
-                                                        handleCheckboxChange(
-                                                            'talento',
-                                                            key,
-                                                            checked,
-                                                        )
-                                                    }
-                                                />
-                                                <Label
-                                                    htmlFor={`talento-${key}`}
-                                                    className="cursor-pointer text-sm font-normal"
-                                                >
-                                                    {label}
-                                                </Label>
-                                            </div>
+                                                <div className="mb-3 flex items-center justify-between">
+                                                    <span className="text-sm font-medium">
+                                                        Profesional #{index + 1}
+                                                    </span>
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            removeProfesional(
+                                                                index,
+                                                            )
+                                                        }
+                                                    >
+                                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                                    </Button>
+                                                </div>
+
+                                                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                                                    <div className="space-y-2">
+                                                        <Label>Tipo</Label>
+                                                        <Select
+                                                            value={
+                                                                profesional.tipo
+                                                            }
+                                                            onValueChange={(
+                                                                value: string,
+                                                            ) =>
+                                                                updateProfesional(
+                                                                    index,
+                                                                    'tipo',
+                                                                    value,
+                                                                )
+                                                            }
+                                                        >
+                                                            <SelectTrigger>
+                                                                <SelectValue />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="Subvencionado">
+                                                                    Subvencionado
+                                                                </SelectItem>
+                                                                <SelectItem value="No Subvencionado">
+                                                                    No
+                                                                    Subvencionado
+                                                                </SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <InputError
+                                                            message={
+                                                                errors[
+                                                                    `talento_detallado.profesionales.${index}.tipo`
+                                                                ]
+                                                            }
+                                                        />
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <Label>Nombre</Label>
+                                                        <Input
+                                                            value={
+                                                                profesional.nombre
+                                                            }
+                                                            onChange={(
+                                                                e: React.ChangeEvent<HTMLInputElement>,
+                                                            ) =>
+                                                                updateProfesional(
+                                                                    index,
+                                                                    'nombre',
+                                                                    e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                            placeholder="Nombre"
+                                                        />
+                                                        <InputError
+                                                            message={
+                                                                errors[
+                                                                    `talento_detallado.profesionales.${index}.nombre`
+                                                                ]
+                                                            }
+                                                        />
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <Label>Apellidos</Label>
+                                                        <Input
+                                                            value={
+                                                                profesional.apellidos
+                                                            }
+                                                            onChange={(
+                                                                e: React.ChangeEvent<HTMLInputElement>,
+                                                            ) =>
+                                                                updateProfesional(
+                                                                    index,
+                                                                    'apellidos',
+                                                                    e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                            placeholder="Apellidos"
+                                                        />
+                                                        <InputError
+                                                            message={
+                                                                errors[
+                                                                    `talento_detallado.profesionales.${index}.apellidos`
+                                                                ]
+                                                            }
+                                                        />
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <Label>Ocupación</Label>
+                                                        <Input
+                                                            value={
+                                                                profesional.ocupacion
+                                                            }
+                                                            onChange={(
+                                                                e: React.ChangeEvent<HTMLInputElement>,
+                                                            ) =>
+                                                                updateProfesional(
+                                                                    index,
+                                                                    'ocupacion',
+                                                                    e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                            placeholder="Ej: Solista Cantante"
+                                                        />
+                                                        <InputError
+                                                            message={
+                                                                errors[
+                                                                    `talento_detallado.profesionales.${index}.ocupacion`
+                                                                ]
+                                                            }
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </Card>
                                         ),
                                     )}
+
+                                    {data.talento_detallado.profesionales
+                                        .length === 0 && (
+                                        <div className="rounded-lg border-2 border-dashed py-4 text-center text-muted-foreground">
+                                            <UserPlus className="mx-auto mb-2 h-8 w-8 opacity-50" />
+                                            <p className="text-sm">
+                                                No hay profesionales agregados
+                                            </p>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={addProfesional}
+                                                className="mt-2"
+                                            >
+                                                <Plus className="mr-2 h-4 w-4" />
+                                                Agregar Primer Profesional
+                                            </Button>
+                                        </div>
+                                    )}
                                 </div>
-                                <InputError message={errors.talento} />
+
+                                <Separator />
+
+                                {/* Aficionados */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <Label className="text-base font-semibold">
+                                            Aficionados
+                                        </Label>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={addAficionado}
+                                        >
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            Agregar Aficionado
+                                        </Button>
+                                    </div>
+
+                                    {data.talento_detallado.aficionados.map(
+                                        (aficionado, index) => (
+                                            <Card
+                                                key={`aficionado-${index}`}
+                                                className="p-4"
+                                            >
+                                                <div className="mb-3 flex items-center justify-between">
+                                                    <span className="text-sm font-medium">
+                                                        Aficionado #{index + 1}
+                                                    </span>
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            removeAficionado(
+                                                                index,
+                                                            )
+                                                        }
+                                                    >
+                                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                                    </Button>
+                                                </div>
+
+                                                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                                                    <div className="space-y-2">
+                                                        <Label>Categoría</Label>
+                                                        <Select
+                                                            value={
+                                                                aficionado.categoria
+                                                            }
+                                                            onValueChange={(
+                                                                value: string,
+                                                            ) =>
+                                                                updateAficionado(
+                                                                    index,
+                                                                    'categoria',
+                                                                    value,
+                                                                )
+                                                            }
+                                                        >
+                                                            <SelectTrigger>
+                                                                <SelectValue />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="Generales">
+                                                                    Generales
+                                                                </SelectItem>
+                                                                <SelectItem value="Municipal">
+                                                                    Categoría
+                                                                    Municipal
+                                                                </SelectItem>
+                                                                <SelectItem value="Provincial">
+                                                                    Categoría
+                                                                    Provincial
+                                                                </SelectItem>
+                                                                <SelectItem value="Nacional">
+                                                                    Categoría
+                                                                    Nacional
+                                                                </SelectItem>
+                                                                <SelectItem value="Portador de Tradiciones">
+                                                                    Portador de
+                                                                    Tradiciones
+                                                                </SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <InputError
+                                                            message={
+                                                                errors[
+                                                                    `talento_detallado.aficionados.${index}.categoria`
+                                                                ]
+                                                            }
+                                                        />
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <Label>Nombre</Label>
+                                                        <Input
+                                                            value={
+                                                                aficionado.nombre
+                                                            }
+                                                            onChange={(
+                                                                e: React.ChangeEvent<HTMLInputElement>,
+                                                            ) =>
+                                                                updateAficionado(
+                                                                    index,
+                                                                    'nombre',
+                                                                    e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                            placeholder="Nombre"
+                                                        />
+                                                        <InputError
+                                                            message={
+                                                                errors[
+                                                                    `talento_detallado.aficionados.${index}.nombre`
+                                                                ]
+                                                            }
+                                                        />
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <Label>Apellidos</Label>
+                                                        <Input
+                                                            value={
+                                                                aficionado.apellidos
+                                                            }
+                                                            onChange={(
+                                                                e: React.ChangeEvent<HTMLInputElement>,
+                                                            ) =>
+                                                                updateAficionado(
+                                                                    index,
+                                                                    'apellidos',
+                                                                    e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                            placeholder="Apellidos"
+                                                        />
+                                                        <InputError
+                                                            message={
+                                                                errors[
+                                                                    `talento_detallado.aficionados.${index}.apellidos`
+                                                                ]
+                                                            }
+                                                        />
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <Label>Ocupación</Label>
+                                                        <Input
+                                                            value={
+                                                                aficionado.ocupacion
+                                                            }
+                                                            onChange={(
+                                                                e: React.ChangeEvent<HTMLInputElement>,
+                                                            ) =>
+                                                                updateAficionado(
+                                                                    index,
+                                                                    'ocupacion',
+                                                                    e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                            placeholder="Ej: Bailarín"
+                                                        />
+                                                        <InputError
+                                                            message={
+                                                                errors[
+                                                                    `talento_detallado.aficionados.${index}.ocupacion`
+                                                                ]
+                                                            }
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </Card>
+                                        ),
+                                    )}
+
+                                    {data.talento_detallado.aficionados
+                                        .length === 0 && (
+                                        <div className="rounded-lg border-2 border-dashed py-4 text-center text-muted-foreground">
+                                            <User className="mx-auto mb-2 h-8 w-8 opacity-50" />
+                                            <p className="text-sm">
+                                                No hay aficionados agregados
+                                            </p>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={addAficionado}
+                                                className="mt-2"
+                                            >
+                                                <Plus className="mr-2 h-4 w-4" />
+                                                Agregar Primer Aficionado
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             <Separator />

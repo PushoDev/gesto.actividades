@@ -8,11 +8,35 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, MapPin, Users, Plus, Eye, Edit, Trash2 } from 'lucide-react';
+import {
+    Calendar,
+    MapPin,
+    Users,
+    Plus,
+    Eye,
+    Edit,
+    Trash2,
+    User,
+    UserPlus,
+} from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { create, show, edit, destroy } from '@/routes/actividades';
 import type { BreadcrumbItem } from '@/types';
 import { PageProps } from '@/types';
+
+interface Profesional {
+    tipo: string;
+    nombre: string;
+    apellidos: string;
+    ocupacion: string;
+}
+
+interface Aficionado {
+    categoria: string;
+    nombre: string;
+    apellidos: string;
+    ocupacion: string;
+}
 
 interface Actividad {
     id: number;
@@ -25,6 +49,10 @@ interface Actividad {
     lugar: string | null;
     manifestacion: string;
     talento: string[] | null;
+    talento_detallado: {
+        profesionales: Profesional[];
+        aficionados: Aficionado[];
+    } | null;
     grupos_etarios: string[] | null;
     proyectos_socioculturales: string[] | null;
     programa_tributa: string | null;
@@ -142,6 +170,111 @@ export default function Actividades({ actividades }: Props) {
                                         {actividad.tipo_actividad_label}
                                     </Badge>
 
+                                    {/* Talento Detallado */}
+                                    {actividad.talento_detallado && (
+                                        <div className="space-y-2">
+                                            {actividad.talento_detallado
+                                                .profesionales.length > 0 && (
+                                                <div className="flex flex-wrap gap-1">
+                                                    <div className="flex items-center gap-1">
+                                                        <User className="h-3 w-3" />
+                                                        <span className="text-xs font-medium">
+                                                            {
+                                                                actividad
+                                                                    .talento_detallado
+                                                                    .profesionales
+                                                                    .length
+                                                            }{' '}
+                                                            Profesional
+                                                            {actividad
+                                                                .talento_detallado
+                                                                .profesionales
+                                                                .length !== 1
+                                                                ? 'es'
+                                                                : ''}
+                                                        </span>
+                                                    </div>
+                                                    {actividad.talento_detallado.profesionales
+                                                        .slice(0, 2)
+                                                        .map((prof, index) => (
+                                                            <Badge
+                                                                key={index}
+                                                                variant="default"
+                                                                className="text-xs"
+                                                            >
+                                                                {prof.nombre}{' '}
+                                                                {prof.apellidos}
+                                                            </Badge>
+                                                        ))}
+                                                    {actividad.talento_detallado
+                                                        .profesionales.length >
+                                                        2 && (
+                                                        <Badge
+                                                            variant="default"
+                                                            className="text-xs"
+                                                        >
+                                                            +
+                                                            {actividad
+                                                                .talento_detallado
+                                                                .profesionales
+                                                                .length - 2}
+                                                        </Badge>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {actividad.talento_detallado
+                                                .aficionados.length > 0 && (
+                                                <div className="flex flex-wrap gap-1">
+                                                    <div className="flex items-center gap-1">
+                                                        <UserPlus className="h-3 w-3" />
+                                                        <span className="text-xs font-medium">
+                                                            {
+                                                                actividad
+                                                                    .talento_detallado
+                                                                    .aficionados
+                                                                    .length
+                                                            }{' '}
+                                                            Aficionado
+                                                            {actividad
+                                                                .talento_detallado
+                                                                .aficionados
+                                                                .length !== 1
+                                                                ? 's'
+                                                                : ''}
+                                                        </span>
+                                                    </div>
+                                                    {actividad.talento_detallado.aficionados
+                                                        .slice(0, 2)
+                                                        .map((af, index) => (
+                                                            <Badge
+                                                                key={index}
+                                                                variant="secondary"
+                                                                className="text-xs"
+                                                            >
+                                                                {af.nombre}{' '}
+                                                                {af.apellidos}
+                                                            </Badge>
+                                                        ))}
+                                                    {actividad.talento_detallado
+                                                        .aficionados.length >
+                                                        2 && (
+                                                        <Badge
+                                                            variant="secondary"
+                                                            className="text-xs"
+                                                        >
+                                                            +
+                                                            {actividad
+                                                                .talento_detallado
+                                                                .aficionados
+                                                                .length - 2}
+                                                        </Badge>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
                                     {actividad.grupos_etarios &&
                                         actividad.grupos_etarios.length > 0 && (
                                             <div className="flex flex-wrap gap-1">
@@ -150,7 +283,7 @@ export default function Actividades({ actividades }: Props) {
                                                     .map((grupo, index) => (
                                                         <Badge
                                                             key={index}
-                                                            variant="secondary"
+                                                            variant="outline"
                                                             className="text-xs"
                                                         >
                                                             {grupo}
@@ -159,7 +292,7 @@ export default function Actividades({ actividades }: Props) {
                                                 {actividad.grupos_etarios
                                                     .length > 3 && (
                                                     <Badge
-                                                        variant="secondary"
+                                                        variant="outline"
                                                         className="text-xs"
                                                     >
                                                         +
